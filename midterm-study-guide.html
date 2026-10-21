@@ -210,6 +210,16 @@ a.<span class="fn">ndim</span></div><div class="ot">2</div></div>
 </div>
 <div class="tip">ndim = 축 개수 · shape = 축마다 길이 · size = shape를 모두 곱한 값</div></div>
 
+<div class="cc trap"><div class="hd">⓪ print(a) 와 그냥 a 의 차이 <span class="pill t">함정</span></div>
+<div class="rows">
+<div class="row"><div class="in">a = np.<span class="fn">array</span>([<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>])</div><div class="ot">(출력 없음)</div><div class="note">a에 ndarray 객체가 저장될 뿐, 화면에는 아무것도 안 나옴</div></div>
+<div class="row"><div class="in"><span class="fn">print</span>(a)</div><div class="ot">[1 2 3]</div><div class="note">print는 쉼표 없이 공백으로</div></div>
+<div class="row"><div class="in">a     <span class="cm"># 코랩 셀 마지막 줄</span></div><div class="ot">array([1, 2, 3])</div><div class="note">print 없이 변수만 쓰면 array(...) 형태로 쉼표와 함께 나옴</div></div>
+<div class="row"><div class="in"><span class="fn">type</span>(a)</div><div class="ot">&lt;class 'numpy.ndarray'&gt;</div></div>
+<div class="row"><div class="in"><span class="fn">print</span>(np.<span class="fn">array</span>([<span class="nu">1.5</span>, <span class="nu">2</span>]))</div><div class="ot">[1.5 2. ]</div><div class="note">실수가 하나라도 있으면 전부 실수가 됨 → 2가 2. 로</div></div>
+</div>
+<div class="tip">문제에 <code>print()</code>가 있으면 <b>[1 2 3]</b>, 없으면 <b>array([1, 2, 3])</b>. 리스트 <code>print([1,2,3])</code>는 <b>[1, 2, 3]</b> (쉼표 있음).</div></div>
+
 <div class="cc trap"><div class="hd">② 리스트 vs 넘파이 배열 <span class="pill t">함정</span><span class="pill h">자주 출제</span></div>
 <div class="rows">
 <div class="row"><div class="in">[<span class="nu">90</span>, <span class="nu">80</span>] + [<span class="nu">70</span>, <span class="nu">60</span>]</div><div class="ot">[90, 80, 70, 60]</div><div class="note">리스트 + 는 이어붙이기 (쉼표 있음)</div></div>
@@ -337,14 +347,21 @@ z[np.newaxis].<span class="fn">shape</span></div><div class="ot">(1, 3)</div><di
 <ul>
 <li>2007년 구글 하계 코드 프로젝트에서 시작. 머신러닝 단계: ① 데이터 준비(특성+레이블) ② 모델 결정 ③ 하이퍼파라미터 설정 ④ 학습 ⑤ 검증.</li>
 </ul>
-<pre>from sklearn import linear_model
-regr = linear_model.LinearRegression()
-X = [[163], [179], [166], [169], [170]]   # 반드시 2차원! (다중 회귀용 설계)
-y = [54, 63, 57, 56, 58]                  # 목표값은 1차원
-regr.fit(X, y)
-regr.coef_, regr.intercept_               # 기울기 ≈ 0.536, 절편 ≈ −33.17
-regr.score(X, y)                          # 관계 점수(결정계수)
-regr.predict([[167]])                     # ≈ 56.3 kg</pre>
+<div class="cgrid">
+<div class="cc trap"><div class="hd">사이킷런 선형 회귀 <span class="pill t">함정</span><span class="pill h">자주 출제</span></div>
+<div class="rows">
+<div class="row"><div class="in"><span class="fn">from</span> sklearn <span class="fn">import</span> linear_model
+regr = linear_model.<span class="fn">LinearRegression</span>()</div><div class="ot">(출력 없음)</div><div class="note">선형 회귀 모델 생성, 변수 이름 regr</div></div>
+<div class="row"><div class="in">X = [[<span class="nu">163</span>], [<span class="nu">179</span>], [<span class="nu">166</span>], [<span class="nu">169</span>], [<span class="nu">170</span>]]
+y = [<span class="nu">54</span>, <span class="nu">63</span>, <span class="nu">57</span>, <span class="nu">56</span>, <span class="nu">58</span>]</div><div class="ot">(출력 없음)</div><div class="note">X는 반드시 <b>2차원</b>(다중 회귀용 설계), y는 1차원. 벡터는 대문자, 스칼라 모임은 소문자</div></div>
+<div class="row"><div class="in">regr.<span class="fn">fit</span>(X, y)</div><div class="ot">LinearRegression()</div><div class="note">학습: 가장 잘 맞는 직선을 찾음</div></div>
+<div class="row"><div class="in">regr.<span class="fn">coef_</span></div><div class="ot">[0.5358]</div><div class="note">기울기 ω (배열로 나옴)</div></div>
+<div class="row"><div class="in">regr.<span class="fn">intercept_</span></div><div class="ot">-33.17</div><div class="note">절편 b</div></div>
+<div class="row"><div class="in">regr.<span class="fn">score</span>(X, y)</div><div class="ot">0.922</div><div class="note">관계 점수 (결정계수, 1에 가까울수록 잘 맞음)</div></div>
+<div class="row"><div class="in">regr.<span class="fn">predict</span>([[<span class="nu">167</span>]])</div><div class="ot">[56.31]</div><div class="note">키 167cm인 동민이의 몸무게 추정. 입력도 2차원 [[167]]</div></div>
+</div>
+<div class="tip"><code>fit(X, y)</code> 학습 → <code>predict</code> 예측. <code>X = [163, 179]</code>처럼 1차원으로 넣으면 오류. (출력은 소수 몇 자리까지만 표시)</div></div>
+</div>
 <ul>
 <li>관례: 벡터/행렬은 대문자 <b>X</b>, 스칼라 모임은 소문자 <b>y</b>.</li>
 <li>남녀를 하나의 직선으로 표현하면 부정확 → 성별을 특성으로 추가 (입력 차원 증가).</li>
@@ -432,37 +449,71 @@ regr.predict([[167]])                     # ≈ 56.3 kg</pre>
 <li><b>케라스</b>: 고수준 API (텐서플로, 테아노, CNTK 위에서 실행).</li>
 <li><b>MNIST</b>: Modified National Institute of Standards and Technology. 손글씨 0~9, <b>28×28 회색조</b>, 픽셀 0(어두움)~255(밝음). 숫자당 6,000장 → 훈련 <b>60,000</b>, 테스트 <b>10,000</b>.</li>
 </ul>
-<pre>mnist = keras.datasets.mnist
-(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
-train_images.shape   # (60000, 28, 28)
-train_labels.shape   # (60000,)
-test_images.shape    # (10000, 28, 28)
-train_labels[:4]     # [5 0 4 1]
-plt.imshow(train_images[0], cmap='Greys')   # 숫자 5</pre>
+<div class="cgrid">
+<div class="cc"><div class="hd">MNIST 읽어오기 <span class="pill h">자주 출제</span></div>
+<div class="rows">
+<div class="row"><div class="in">mnist = keras.datasets.mnist
+(train_images, train_labels), \
+(test_images, test_labels) = mnist.<span class="fn">load_data</span>()</div><div class="ot">(출력 없음)</div><div class="note">훈련 이미지·레이블, 테스트 이미지·레이블 네 묶음</div></div>
+<div class="row"><div class="in">train_images.<span class="fn">shape</span></div><div class="ot">(60000, 28, 28)</div><div class="note">28×28 이미지 6만 장 (ndim = 3)</div></div>
+<div class="row"><div class="in">train_labels.<span class="fn">shape</span></div><div class="ot">(60000,)</div><div class="note">정답 숫자 6만 개 (1차원)</div></div>
+<div class="row"><div class="in">test_images.<span class="fn">shape</span></div><div class="ot">(10000, 28, 28)</div></div>
+<div class="row"><div class="in">train_images[<span class="nu">0</span>].<span class="fn">max</span>()</div><div class="ot">255</div><div class="note">픽셀 범위 0(어두움) ~ 255(밝음)</div></div>
+<div class="row"><div class="in"><span class="fn">print</span>(train_labels[:<span class="nu">4</span>])</div><div class="ot">[5 0 4 1]</div><div class="note">앞의 네 이미지는 숫자 5, 0, 4, 1</div></div>
+<div class="row"><div class="in">plt.<span class="fn">imshow</span>(train_images[<span class="nu">0</span>], cmap=<span class="st">'Greys'</span>)</div><div class="ot">숫자 5 그림</div><div class="note">matplotlib으로 배열을 이미지로 표시</div></div>
+</div></div>
+</div>
+
 <h3>모델 만들기 6단계</h3>
-<pre># 1단계: 전처리 (정규화) 0~255 → 0~1
-train_images, test_images = train_images / 255, test_images / 255
+<div class="cgrid">
+<div class="cc"><div class="hd">1단계 · 전처리 (정규화)</div>
+<div class="rows">
+<div class="row"><div class="in">train_images = train_images / <span class="nu">255</span>
+test_images  = test_images / <span class="nu">255</span></div><div class="ot">0~255 → 0~1</div><div class="note">연속적인 실수 입력이 학습에 유리</div></div>
+</div></div>
 
-# 2단계: 모델
-model = keras.models.Sequential([
-    keras.layers.Flatten(input_shape=(28, 28)),       # 784개 1차원
-    keras.layers.Dense(60, activation='relu'),        # 은닉층 60
-    keras.layers.Dense(10, activation='softmax'),     # 출력 10
-])
-model.summary()      # 파라미터 47,710
+<div class="cc"><div class="hd">2단계 · 모델 만들기 <span class="pill h">자주 출제</span></div>
+<div class="rows">
+<div class="row"><div class="in">model = keras.models.<span class="fn">Sequential</span>([
+  keras.layers.<span class="fn">Flatten</span>(input_shape=(<span class="nu">28</span>, <span class="nu">28</span>)),
+  keras.layers.<span class="fn">Dense</span>(<span class="nu">60</span>, activation=<span class="st">'relu'</span>),
+  keras.layers.<span class="fn">Dense</span>(<span class="nu">10</span>, activation=<span class="st">'softmax'</span>),
+])</div><div class="ot multi">입력  784
+은닉   60
+출력   10</div><div class="note">Sequential = 층을 순서대로 연결. Flatten = 28×28을 784개 1차원으로. Dense = 완전 연결층. 출력 10개 = 숫자 0~9</div></div>
+<div class="row"><div class="in">model.<span class="fn">summary</span>()</div><div class="ot multi">flatten  (None, 784)      0
+dense    (None, 60)   47100
+dense_1  (None, 10)     610
+Total params: 47,710</div><div class="note">784×60+60 = 47,100 / 60×10+10 = 610. Flatten은 파라미터 0</div></div>
+</div></div>
 
-# 3단계: 최적화 함수, 손실 함수, 측정 방법
-model.compile(optimizer='adam',
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy'])
+<div class="cc"><div class="hd">3단계 · compile (최적화 함수, 손실 함수, 측정 방법) <span class="pill h">자주 출제</span></div>
+<div class="rows">
+<div class="row"><div class="in">model.<span class="fn">compile</span>(
+  optimizer=<span class="st">'adam'</span>,
+  loss=<span class="st">'sparse_categorical_crossentropy'</span>,
+  metrics=[<span class="st">'accuracy'</span>])</div><div class="ot multi">optimizer: 오차 줄이는 방법
+loss: 오차 재는 함수
+metrics: 성능 척도</div><div class="note">Adam은 경사하강법의 한 종류. accuracy = 맞힌 수 / 전체 (54,000/60,000 = 0.9)</div></div>
+</div></div>
 
-# 4단계: 학습
-model.fit(train_images, train_labels, epochs=3)
+<div class="cc"><div class="hd">4단계 · fit (학습)</div>
+<div class="rows">
+<div class="row"><div class="in">model.<span class="fn">fit</span>(train_images, train_labels,
+          epochs=<span class="nu">3</span>)</div><div class="ot multi">Epoch 1/3
+1875/1875 ... loss ↓ accuracy ↑</div><div class="note">epochs=3 → 전체 데이터 3번 학습. 기본 배치 32 → 60,000 ÷ 32 = 1,875번 갱신이 1 에폭. 오차 역전파로 학습</div></div>
+</div></div>
 
-# 5단계: 정확도 (처음 보는 데이터)
-test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
-
-# 6단계: 성능 개선 (층·노드 늘리기, 데이터 늘리기, 에폭 늘리기, 부분 연결망 등)</pre>
+<div class="cc"><div class="hd">5단계 · evaluate (테스트 정확도)</div>
+<div class="rows">
+<div class="row"><div class="in">test_loss, test_acc = model.<span class="fn">evaluate</span>(
+    test_images, test_labels, verbose=<span class="nu">2</span>)</div><div class="ot">예: 0.7907</div><div class="note">처음 보는 데이터라 훈련 정확도보다 조금 낮을 수 있음. 초기 가중치가 랜덤이라 매번 다름</div></div>
+<div class="row"><div class="in">verbose=<span class="nu">0</span> / <span class="nu">1</span> / <span class="nu">2</span></div><div class="ot multi">0: 침묵
+1: 진행 막대
+2: 에폭당 한 줄</div></div>
+</div>
+<div class="tip">6단계 · 성능 개선: 층·노드 늘리기, 학습 데이터 늘리기, 에폭 늘리기, 완전 연결망 대신 부분 연결망 사용</div></div>
+</div>
 <div class="f"><div class="k">파라미터 수 (가중치 + 편향)</div><div class="v">(784 × 60 + 60) + (60 × 10 + 10) = 47,100 + 610 = <b>47,710</b></div></div>
 <ul>
 <li>Flatten: 2차원 이미지를 1차원으로 (기하학적 정보 손실 → 나중에 CNN). 28×28 = <b>784</b>.</li>
@@ -481,18 +532,60 @@ test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
 <li>입력을 2배로 하면 최대값 확률이 더 커짐 (0.9506) → 큰 값은 강화, 작은 값은 억제 (지수함수라서).</li>
 <li><code>np.set_printoptions(precision=4, suppress=True)</code>: 정밀도 / 지수 표기 억제.</li>
 </ul>
+<div class="cgrid">
+<div class="cc"><div class="hd">소프트맥스 넘파이 코드 <span class="pill h">자주 출제</span></div>
+<div class="rows">
+<div class="row"><div class="in">a = np.<span class="fn">array</span>([<span class="nu">0.5</span>, <span class="nu">4.1</span>, <span class="nu">2.5</span>, <span class="nu">5.6</span>, <span class="nu">1.2</span>])
+y = np.<span class="fn">exp</span>(a) / np.<span class="fn">sum</span>(np.<span class="fn">exp</span>(a))
+<span class="fn">print</span>(y)</div><div class="ot">[0.0047 0.1734 0.035  0.7773 0.0095]</div><div class="note">precision=4 기준. 슬라이드에는 0.7772로 표기</div></div>
+<div class="row"><div class="in">np.<span class="fn">sum</span>(y)</div><div class="ot">1.0</div><div class="note">소프트맥스 출력의 합은 항상 1 (확률)</div></div>
+<div class="row"><div class="in">np.<span class="fn">max</span>(y)</div><div class="ot">0.7773</div><div class="note">가장 큰 확률값</div></div>
+<div class="row"><div class="in">np.<span class="fn">argmax</span>(y)</div><div class="ot">3</div><div class="note">가장 큰 값의 <b>인덱스</b> → 예측 숫자 3</div></div>
+</div>
+<div class="tip">max는 <b>값</b>, argmax는 <b>위치(인덱스)</b>를 돌려줍니다.</div></div>
+</div>
 <h3>원-핫 인코딩</h3>
 <ul>
 <li>레이블 0,1,2,3,4의 <b>순서적(서수) 관계</b>를 없애기 위해 이진 벡터로: 3 → [0, 0, 0, 1, 0].</li>
 <li><code>keras.utils.to_categorical([0,1,2,3,4])</code>. 문자열('red','green','blue')은 딕셔너리로 번호를 매긴 뒤 변환.</li>
 <li>정답 3(원-핫) vs 소프트맥스 출력의 MSE = <b>0.0162</b>. 예측 [0.1, 0.3, 0.5, 0.02, 0.08]이면 MSE = <b>0.26336</b>.</li>
 </ul>
+<div class="cgrid">
+<div class="cc"><div class="hd">원-핫 인코딩 코드 <span class="pill h">자주 출제</span></div>
+<div class="rows">
+<div class="row"><div class="in">data = [<span class="nu">0</span>, <span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>, <span class="nu">4</span>]
+<span class="fn">print</span>(keras.utils.<span class="fn">to_categorical</span>(data))</div><div class="ot multi">[[1. 0. 0. 0. 0.]
+ [0. 1. 0. 0. 0.]
+ [0. 0. 1. 0. 0.]
+ [0. 0. 0. 1. 0.]
+ [0. 0. 0. 0. 1.]]</div><div class="note">레이블 3 → [0, 0, 0, 1, 0]. 결과는 실수(1., 0.)</div></div>
+<div class="row"><div class="in">color_data = [<span class="st">'red'</span>, <span class="st">'green'</span>, <span class="st">'blue'</span>]
+color_dic = {k: v <span class="fn">for</span> v, k <span class="fn">in</span> <span class="fn">enumerate</span>(color_data)}</div><div class="ot">{'red': 0, 'green': 1, 'blue': 2}</div><div class="note">문자열은 딕셔너리로 번호를 붙인 뒤 to_categorical</div></div>
+<div class="row"><div class="in">target = np.<span class="fn">array</span>([<span class="nu">0</span>, <span class="nu">0</span>, <span class="nu">0</span>, <span class="nu">1</span>, <span class="nu">0</span>])
+np.<span class="fn">mean</span>((target - y) ** <span class="nu">2</span>)</div><div class="ot">0.0162</div><div class="note">y = 위 소프트맥스 출력. 범주형 데이터의 MSE</div></div>
+</div></div>
+</div>
 <h3>교차 엔트로피 오차 (CEE)</h3>
 <div class="f"><div class="k">정답 t는 원-핫이어야 함, log = 자연로그</div><div class="v">E<sub>CEE</sub> = − Σ<sub>k</sub> t<sub>k</sub> log ŷ<sub>k</sub>   → 정답 위치의 −log ŷ 만 남음</div></div>
 <ul>
 <li>정답 위치 예측 0.77 → −log 0.77 ≈ <b>0.26</b>. 0.035 → −log 0.035 ≈ <b>3.35</b>.</li>
 <li>정답 [0,0,1], ŷ₁=[0.4, 0.05, 0.55], ŷ₂=[0.9, 0.09, 0.01] → CEE 0.60 vs 4.61 (<b>7.7배</b>), MSE 0.12 vs 0.61 (<b>4.93배</b>). CEE가 틀린 예측에 벌점을 더 크게 → 학습이 빠름. 레이블이 많아도 정답 항만 계산 → 계산량 적음.</li>
 </ul>
+<div class="cgrid">
+<div class="cc"><div class="hd">교차 엔트로피 vs MSE 비교 코드 <span class="pill h">자주 출제</span></div>
+<div class="rows">
+<div class="row"><div class="in"><span class="fn">def</span> <span class="fn">cee</span>(y_hat, t):
+    <span class="fn">return</span> -np.<span class="fn">sum</span>(t * np.<span class="fn">log</span>(y_hat))</div><div class="ot">(함수 정의)</div><div class="note">np.log = 자연로그 ln. 원-핫 t라서 정답 위치만 남음</div></div>
+<div class="row"><div class="in">t      = np.<span class="fn">array</span>([<span class="nu">0</span>, <span class="nu">0</span>, <span class="nu">1</span>])
+y_hat1 = np.<span class="fn">array</span>([<span class="nu">0.4</span>, <span class="nu">0.05</span>, <span class="nu">0.55</span>])
+y_hat2 = np.<span class="fn">array</span>([<span class="nu">0.9</span>, <span class="nu">0.09</span>, <span class="nu">0.01</span>])
+<span class="fn">cee</span>(y_hat1, t)</div><div class="ot">0.598</div><div class="note">−ln 0.55</div></div>
+<div class="row"><div class="in"><span class="fn">cee</span>(y_hat2, t)</div><div class="ot">4.605</div><div class="note">−ln 0.01 → 정답을 거의 0으로 예측해서 벌점이 큼 (약 7.7배)</div></div>
+<div class="row"><div class="in">np.<span class="fn">mean</span>((y_hat1 - t) ** <span class="nu">2</span>)</div><div class="ot">0.1217</div></div>
+<div class="row"><div class="in">np.<span class="fn">mean</span>((y_hat2 - t) ** <span class="nu">2</span>)</div><div class="ot">0.5994</div><div class="note">슬라이드 표기 0.61. MSE 차이는 약 4.93배로 CEE보다 작음</div></div>
+</div>
+<div class="tip">정답 위치 예측이 0.77 → CEE 0.26, 0.035 → 3.35. 정답에서 멀수록 오차가 크게 커짐.</div></div>
+</div>
 <h3>옵티마이저</h3>
 <ul>
 <li>손실 함수를 최소화하는 매개변수를 찾는 방법. 경사하강법 계열: <b>SGD</b>(확률적 경사하강법), <b>모멘텀</b>, <b>RMSProp</b>, <b>Adam</b>(가장 흔히 씀, 모멘텀+RMSProp 아이디어).</li>
