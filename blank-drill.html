@@ -1,0 +1,260 @@
+<title>딥러닝 빈칸 연습</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one column of code cards in study order, sticky score bar */
+:root{
+  --bg:#f6f7f9; --surface:#ffffff; --fg:#1b2230; --muted:#5b6475; --line:#dde1e8;
+  --accent:#2f5bd3; --accent-soft:#e6edfc;
+  --ok:#1f7a4d; --ok-soft:#e2f3ea; --bad:#c23b22; --bad-soft:#fbe6e1;
+  --code-bg:#f2f4f8;
+  --sans:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151b; --surface:#1a1f28; --fg:#e4e8ef; --muted:#9aa3b2; --line:#2c3340;
+  --accent:#7ea2ff; --accent-soft:#1e2a47; --ok:#6fd3a0; --ok-soft:#173326; --bad:#ff8a73; --bad-soft:#3a1f1a; --code-bg:#151a22; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151b; --surface:#1a1f28; --fg:#e4e8ef; --muted:#9aa3b2; --line:#2c3340;
+  --accent:#7ea2ff; --accent-soft:#1e2a47; --ok:#6fd3a0; --ok-soft:#173326; --bad:#ff8a73; --bad-soft:#3a1f1a; --code-bg:#151a22; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.6}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar .in{max-width:820px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.score{font-weight:700;font-variant-numeric:tabular-nums}
+.score .n{color:var(--ok)} .score .w{color:var(--bad)}
+.prog{flex:1;min-width:80px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--ok);width:0;transition:width .2s}
+button{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.wrap{max-width:820px;margin:0 auto;padding-block:16px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:22px;margin:4px 0 4px;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 6px;font-size:14px}
+.how{font-size:13px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.how b{color:var(--fg)}
+section{margin-top:26px}
+section>h2{font-size:18px;margin:0 0 4px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;text-wrap:balance}
+section>h2 .k{font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.06em}
+section>h2 .cnt{font-size:12px;color:var(--muted);font-weight:600;margin-left:auto;font-variant-numeric:tabular-nums}
+section>p{margin:0 0 8px;color:var(--muted);font-size:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;margin:8px 0;overflow:hidden}
+.card .q{font-size:13px;color:var(--muted);padding:7px 12px 0}
+pre.code{margin:0;padding:10px 12px;font-family:var(--mono);font-size:14px;line-height:2;white-space:pre;overflow-x:auto;background:var(--code-bg)}
+.card .q + pre.code{margin-top:6px}
+.card .tip{font-size:13px;padding:6px 12px;border-top:1px solid var(--line);color:var(--muted)}
+input.b{font-family:var(--mono);font-size:16px;padding:1px 5px;border:1.5px solid var(--line);border-radius:5px;background:var(--surface);color:var(--fg);vertical-align:baseline;min-width:3ch}
+input.b.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:600}
+input.b.bad{border-color:var(--bad);background:var(--bad-soft)}
+.ans{font-family:var(--mono);font-size:12px;color:var(--bad);margin-left:4px;white-space:pre}
+.ans[hidden]{display:none!important}
+.done{margin-top:26px;padding:14px;border-radius:8px;background:var(--ok-soft);border:1px solid var(--ok);font-weight:600}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}}
+</style>
+
+<div class="bar"><div class="in">
+<span class="score">맞힘 <span class="n" id="sOk">0</span> · 틀림 <span class="w" id="sBad">0</span> / <span id="sAll">0</span></span>
+<span class="prog" aria-hidden="true"><i id="pBar"></i></span>
+<button type="button" id="showWrong">틀린 것 정답 보기</button>
+<button type="button" id="reset">처음부터</button>
+</div></div>
+
+<div class="wrap">
+<h1>딥러닝 빈칸 연습</h1>
+<p class="sub">시험에 나올 확률이 높은 순서대로 배치했습니다. 빈칸을 채우고 Enter나 다음 칸으로 이동하면 바로 채점됩니다.</p>
+<div class="how"><span><b>초록</b> 정답</span><span><b>빨강</b> 오답 + 옆에 정답 표시</span><span>띄어쓰기·따옴표는 신경 쓰지 않아도 됨</span><span>배열 출력의 <b>쉼표 유무</b>와 <b>대소문자</b>는 채점함</span></div>
+<div id="root"></div>
+<div class="done" id="done" hidden>전부 맞혔어요! 틀렸던 칸만 한 번 더 보고 시험장으로 가세요.</div>
+</div>
+
+<script>
+/* ⟦정답|다른 정답⟧ 이 빈칸. 위에서부터 공부 순서. */
+const SECTIONS = [
+{ k:"1순위 · 7장", t:"케라스 모델 6단계", p:"빈칸 문제로 가장 나오기 쉬운 코드입니다.", cards:[
+ { q:"MNIST 데이터 읽기와 모양", code:
+`mnist = keras.datasets.⟦mnist⟧
+(train_images, train_labels), (test_images, test_labels) = mnist.⟦load_data⟧()
+train_images.shape   →  ⟦(60000, 28, 28)⟧
+train_labels.shape   →  ⟦(60000,)⟧
+test_images.shape    →  ⟦(10000, 28, 28)⟧`},
+ { q:"1단계 전처리: 0~255를 0~1로 (정규화)", code:
+`train_images = train_images / ⟦255⟧
+test_images  = test_images / ⟦255⟧`},
+ { q:"2단계 모델 만들기", code:
+`model = keras.models.⟦Sequential⟧([
+    keras.layers.⟦Flatten⟧(input_shape=(⟦28⟧, ⟦28⟧)),
+    keras.layers.⟦Dense⟧(60, activation='⟦relu⟧'),
+    keras.layers.Dense(⟦10⟧, activation='⟦softmax⟧'),
+])`, tip:"출력층 10개 = 숫자 0~9. 출력층은 확률이 필요하니 softmax"},
+ { q:"3단계 compile: 최적화 함수, 손실 함수, 측정 방법", code:
+`model.⟦compile⟧(optimizer='⟦adam⟧',
+              loss='⟦sparse_categorical_crossentropy⟧',
+              metrics=['⟦accuracy⟧'])`},
+ { q:"4단계 학습, 5단계 평가", code:
+`model.⟦fit⟧(train_images, train_labels, ⟦epochs⟧=3)
+model.⟦evaluate⟧(test_images, test_labels, ⟦verbose⟧=2)`, tip:"verbose 0 = 침묵, 1 = 진행 막대, 2 = 에폭당 한 줄"},
+ { q:"숫자 계산", code:
+`Flatten 노드 수 = 28 × 28 =            ⟦784⟧
+Dense(60) 파라미터 = 784 × 60 + 60 =   ⟦47100|47,100⟧
+Dense(10) 파라미터 = 60 × 10 + 10 =    ⟦610⟧
+전체 파라미터 =                         ⟦47710|47,710⟧
+배치 32일 때 1 에폭 스텝 = 60000 / 32 = ⟦1875|1,875⟧`},
+]},
+{ k:"2순위 · 3장", t:"넘파이 출력 맞히기", p:"→ 오른쪽에 print 결과를 그대로 쓰세요. 리스트는 쉼표, 배열은 공백입니다.", cards:[
+ { q:"리스트 vs 배열", code:
+`print([90, 80] + [70, 60])                        →  ⟦[90, 80, 70, 60]⟧
+print(np.array([90, 80]) + np.array([70, 60]))    →  ⟦[160 140]⟧
+print(np.array([10, 20, 30]) * 10)                →  ⟦[100 200 300]⟧`, tip:"리스트 + 는 이어붙이기, 배열 + 는 원소끼리 더하기, 스칼라 곱은 브로드캐스팅"},
+ { q:"곱셈 세 가지 (x = [[1,2],[3,4]], y = [[5,6],[7,8]])", code:
+`print(x * y)    →  ⟦[[5 12] [21 32]]|[[5 12][21 32]]⟧
+print(x @ y)    →  ⟦[[19 22] [43 50]]|[[19 22][43 50]]⟧
+u = np.array([1, 2, 0, -1]); v = np.array([2, 2, 3, 4])
+print(np.dot(u, v))    →  ⟦2⟧`, tip:"* 는 같은 위치끼리, @ 는 행 · 열 (1×5+2×7=19)"},
+ { q:"속성 (a = np.array([[1, 2, 3], [4, 5, 6]]))", code:
+`a.ndim     →  ⟦2⟧
+a.shape    →  ⟦(2, 3)⟧
+a.size     →  ⟦6⟧`},
+ { q:"연속된 값", code:
+`print(np.linspace(0, 10, 5))    →  ⟦[0. 2.5 5. 7.5 10.]|[0 2.5 5 7.5 10]⟧
+print(np.arange(0, 10, 2))      →  ⟦[0 2 4 6 8]⟧
+print(np.arange(5))             →  ⟦[0 1 2 3 4]⟧`, tip:"linspace 끝 포함·개수 / arange 끝 미포함·간격"},
+ { q:"reshape (y = np.arange(12))", code:
+`y.reshape(-1, 4).shape       →  ⟦(3, 4)⟧
+y.reshape(6, -1).shape       →  ⟦(6, 2)⟧
+y.reshape(-1, 2, 3).shape    →  ⟦(2, 2, 3)⟧`, tip:"−1 = 자동 계산. reshape(a, b)는 a행 b열"},
+ { q:"인덱싱 (b = np.array([[10,20,30],[40,50,60],[70,80,90]]))", code:
+`b[1, 2]        →  ⟦60⟧
+print(b[:, 0])        →  ⟦[10 40 70]⟧
+print(b[b >= 50])     →  ⟦[50 60 70 80 90]⟧`},
+ { q:"전치", code:
+`print(np.array([[1, 2, 3], [4, 5, 6]]).T)    →  ⟦[[1 4] [2 5] [3 6]]|[[1 4][2 5][3 6]]⟧
+np.array([[1, 2, 3], [4, 5, 6]]).T.shape      →  ⟦(3, 2)⟧`},
+]},
+{ k:"3순위 · 7장", t:"소프트맥스 · 원-핫 · 교차 엔트로피", cards:[
+ { q:"소프트맥스 (a = np.array([0.5, 4.1, 2.5, 5.6, 1.2]))", code:
+`y = np.⟦exp⟧(a) / np.⟦sum⟧(np.exp(a))
+np.sum(y)       →  ⟦1|1.0⟧
+np.max(y)       →  ⟦0.7772|0.7773|0.78|0.777⟧
+np.argmax(y)    →  ⟦3⟧`, tip:"max = 가장 큰 값, argmax = 가장 큰 값의 위치(예측한 숫자)"},
+ { q:"원-핫 인코딩 (클래스 5개)", code:
+`레이블 3의 원-핫  →  ⟦[0, 0, 0, 1, 0]|[0 0 0 1 0]|[0. 0. 0. 1. 0.]⟧
+keras.utils.⟦to_categorical⟧([0, 1, 2, 3, 4])`},
+ { q:"교차 엔트로피", code:
+`def cee(y_hat, t):
+    return ⟦-⟧np.sum(t * np.⟦log⟧(y_hat))
+
+정답 위치 확률 0.77  →  오차 ⟦0.26|0.261⟧
+정답 위치 확률 1.0   →  오차 ⟦0⟧`, tip:"원-핫이라 정답 칸만 남음 → −log(정답 확률)"},
+]},
+{ k:"4순위 · 5장", t:"퍼셉트론 게이트", cards:[
+ { q:"편향을 가진 퍼셉트론", code:
+`def activation(s):
+    return 1 if s >= ⟦0⟧ else 0
+
+def gate(x1, x2, w):
+    x = np.array([x1, x2, ⟦1⟧])     # 편향 노드의 입력
+    s = np.⟦sum⟧(x * w)
+    return activation(s)`},
+ { q:"가중치 [w1, w2, 편향]", code:
+`AND  = [0.5, 0.5, ⟦-0.8⟧]
+OR   = [0.5, 0.5, ⟦-0.3⟧]
+NAND = [⟦-0.5⟧, ⟦-0.5⟧, ⟦0.8⟧]`},
+ { q:"출력 맞히기", code:
+`gate(1, 1, AND)     →  ⟦1⟧
+gate(0, 1, AND)     →  ⟦0⟧
+gate(0, 1, OR)      →  ⟦1⟧
+gate(1, 1, NAND)    →  ⟦0⟧
+XOR = ⟦AND⟧( ⟦OR⟧(x1, x2), ⟦NAND⟧(x1, x2) )`},
+]},
+{ k:"5순위 · 6장", t:"활성화 함수", cards:[
+ { q:"함수 구현과 값", code:
+`def sigmoid(x):
+    return 1 / (1 + np.exp(⟦-x⟧))
+
+def relu(x):
+    return np.⟦maximum⟧(0, x)
+
+sigmoid(0)                        →  ⟦0.5⟧
+sigmoid(0) * (1 - sigmoid(0))     →  ⟦0.25⟧
+print(relu(np.array([-2, 0, 3]))) →  ⟦[0 0 3]⟧`, tip:"시그모이드 미분 최대 0.25 → 기울기 소실. ReLU 미분은 0 또는 1"},
+]},
+];
+
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function norm(s){
+  let v = String(s).trim().replace(/['"]/g,'');
+  v = v.replace(/\s+/g,' ');
+  v = v.replace(/([\[\(])\s+/g,'$1').replace(/\s+([\]\)])/g,'$1');
+  v = v.replace(/\]\s*\[/g,'][');
+  v = v.replace(/\s*,\s*/g,',');
+  v = v.replace(/(^|[^\d])\.(\d)/g,'$10.$2');
+  v = v.replace(/(\d)\s*([×*\/+])\s*(\d)/g,'$1$2$3');
+  return v;
+}
+function numEq(a,b){
+  const x = Number(a.replace(/,/g,'')), y = Number(b.replace(/,/g,''));
+  return a !== '' && !isNaN(x) && !isNaN(y) && x === y;
+}
+
+const root = document.getElementById('root');
+const blanks = [];
+SECTIONS.forEach((sec, si) => {
+  const s = document.createElement('section');
+  s.innerHTML = `<h2><span class="k">${esc(sec.k)}</span>${esc(sec.t)}<span class="cnt" id="c${si}"></span></h2>` + (sec.p ? `<p>${esc(sec.p)}</p>` : '');
+  sec.cards.forEach(card => {
+    const c = document.createElement('div'); c.className = 'card';
+    let html = `<div class="q">${esc(card.q)}</div><pre class="code">`;
+    const parts = card.code.split(/⟦(.*?)⟧/);
+    parts.forEach((p, i) => {
+      if (i % 2 === 0) { html += esc(p); return; }
+      const answers = p.split('|');
+      const id = 'b' + blanks.length;
+      const w = Math.max(3, Math.min(34, answers[0].length + 1));
+      html += `<input class="b" id="${id}" style="width:${w}ch" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="빈칸 ${blanks.length+1}"><span class="ans" id="${id}a" hidden>${esc(answers[0])}</span>`;
+      blanks.push({ id, answers, sec: si, state: '' });
+    });
+    html += `</pre>` + (card.tip ? `<div class="tip">${esc(card.tip)}</div>` : '');
+    c.innerHTML = html; s.appendChild(c);
+  });
+  root.appendChild(s);
+});
+
+function grade(b, final){
+  const el = document.getElementById(b.id), ans = document.getElementById(b.id + 'a');
+  const v = norm(el.value);
+  const ok = v !== '' && b.answers.some(a => norm(a) === v || numEq(v, norm(a)));
+  if (ok){ b.state = 'ok'; el.className = 'b ok'; ans.hidden = true; }
+  else if (v === ''){ b.state = ''; el.className = 'b'; ans.hidden = true; }
+  else if (final){ b.state = 'bad'; el.className = 'b bad'; ans.hidden = false; }
+  else { el.className = 'b'; }
+  update();
+}
+function update(){
+  const ok = blanks.filter(b => b.state === 'ok').length, bad = blanks.filter(b => b.state === 'bad').length;
+  document.getElementById('sOk').textContent = ok;
+  document.getElementById('sBad').textContent = bad;
+  document.getElementById('sAll').textContent = blanks.length;
+  document.getElementById('pBar').style.width = (ok / blanks.length * 100) + '%';
+  SECTIONS.forEach((_, si) => {
+    const mine = blanks.filter(b => b.sec === si);
+    document.getElementById('c' + si).textContent = `${mine.filter(b => b.state === 'ok').length} / ${mine.length}`;
+  });
+  document.getElementById('done').hidden = ok !== blanks.length;
+}
+blanks.forEach((b, i) => {
+  const el = document.getElementById(b.id);
+  el.addEventListener('input', () => grade(b, false));
+  el.addEventListener('blur', () => grade(b, true));
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter'){ e.preventDefault(); grade(b, true); const n = blanks[i+1]; if (n) document.getElementById(n.id).focus(); }
+  });
+});
+document.getElementById('showWrong').addEventListener('click', () => {
+  blanks.forEach(b => { if (b.state !== 'ok'){ document.getElementById(b.id + 'a').hidden = false; if (b.state === '') document.getElementById(b.id).className = 'b bad'; } });
+});
+document.getElementById('reset').addEventListener('click', () => {
+  blanks.forEach(b => { const el = document.getElementById(b.id); el.value = ''; el.className = 'b'; document.getElementById(b.id + 'a').hidden = true; b.state = ''; });
+  update(); window.scrollTo(0, 0);
+});
+update();
+</script>
